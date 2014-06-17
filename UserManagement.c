@@ -17,13 +17,14 @@
 #include "UserManagement.h"
 #include "UserManagement_Func.h" // 함수 선언
 
-
 // 메인 함수
 int main(void){
 
 	//변수 선언부
 	int userCount;
 	int option;
+	int searchResult[User_MAX];
+	int searchCount=0;
 
 	UserInfo userInfo[User_MAX];
 	FILE *readFile;
@@ -38,12 +39,6 @@ int main(void){
 	// 데이터 파일 읽어오기
 	readFile = fopen("data.txt", "rt");
 	if (readFile == NULL){
-		puts("data.txt file error. \n");
-		return -1;
-	}
-
-	writeFile = fopen("out.txt", "wt");
-	if (writeFile == NULL){
 		puts("data.txt file error. \n");
 		return -1;
 	}
@@ -75,11 +70,9 @@ int main(void){
 		printf("		다음 중 사용하실 기능을 선택해주세요. \n\n");
 		printf("		   1. 전체 회원 명단 보기 \n");
 		printf("		   2. 신규 회원 등록하기 \n");
-		printf("		   3. 기존 회원 삭제하기 \n");
-		printf("		   4. 기존 회원 정보 수정하기 \n");
-		printf("		   5. 기존 회원 검색하기 \n");
-		printf("		   6. 변경 내용 저장 및 종료하기 \n");
-		printf("		   7. 개발자 정보 보기 \n\n");
+		printf("		   3. 기존 회원 검색하기 (수정 및 삭제) \n");
+		printf("		   4. 변경 내용 저장 및 종료하기 \n");
+		printf("		   5. 개발자 정보 보기 \n\n");
 		printf("        ────────────────────────────────────────────\n");
 
 
@@ -90,48 +83,43 @@ int main(void){
 		{
 			if (_kbhit())
 			{
-				option = (getche() - 48); //아스키 코드 값을 정수로 변환 
+				option = getch(); //아스키 코드 값을 정수로 변환 
 
 				switch (option){
-				case 1:
+				case ONE:
 					system("cls");
-					mainfunc_List(userInfo, readFile, userCount);
+					mainfunc_List(userInfo, userCount);
 					break;
-				case 2:
-					fclose(readFile);
+				case TWO:
 					system("cls");
 					mainfunc_Enroll(userInfo, &userCount);
+					break;
+				case THREE:
+					system("cls");
+					mainfunc_Search(userInfo, userCount, searchResult);
+					break;
+				case FOUR:
+					system("cls");
+					fclose(readFile);
 
-					readFile = fopen("data.txt", "rt");
-					if (readFile == NULL){
+					writeFile = fopen("data.txt", "wt");
+					if (writeFile == NULL){
 						puts("data.txt file error. \n");
 						return -1;
 					}
-					break;
-				case 3:
-					system("cls");
-					mainfunc_Delete();
-					break;
-				case 4:
-					system("cls");
-					mainfunc_Modify();
-					break;
-				case 5:
-					system("cls");
-					mainfunc_Search();
-					break;
-				case 6:
-					system("cls");
-					mainfunc_SaveExit();
-					break;
-				case 7:
+
+					mainfunc_SaveExit(userInfo, writeFile, userCount);
+					fclose(writeFile);
+
+					return;
+				case FIVE:
 					system("cls");
 					mainfunc_Info();
 					break;
 				default:
 					printf("\n\n	    잘못된 입력입니다!");
 					printf("\n	    아무 키나 입력하시면 다시 선택하실 수 있습니다. ");
-					getche();
+					getch();
 				}
 				break;
 			}
